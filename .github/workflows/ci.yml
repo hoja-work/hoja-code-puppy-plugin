@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    name: Python ${{ matrix.python }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: hoja-code-puppy-plugin
+      # pydantic-ai-hoja resolves from the sibling checkout (see [tool.uv.sources]) until it is on PyPI.
+      - uses: actions/checkout@v4
+        with:
+          repository: hoja-work/hoja-pydantic-ai-plugin
+          path: hoja-pydantic-ai-plugin
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Lint
+        working-directory: hoja-code-puppy-plugin
+        run: uv run ruff check . && uv run ruff format --check .
+      - name: Types
+        working-directory: hoja-code-puppy-plugin
+        run: uv run pyright
+      - name: Tests
+        working-directory: hoja-code-puppy-plugin
+        run: uv run pytest -q

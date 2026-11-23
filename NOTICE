@@ -1,0 +1,2 @@
+This plugin runs the Hoja runtime through pydantic-ai-hoja (https://github.com/hoja-work/hoja-pydantic-ai-plugin),
+which bundles it from hoja-work/hoja-claude-plugin. See that package's NOTICE for provenance.
